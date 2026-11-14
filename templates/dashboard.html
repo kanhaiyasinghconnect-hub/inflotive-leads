@@ -1,0 +1,55 @@
+{% extends "base.html" %}{% block body %}
+<div class="grid">
+{% for k,l in [('total','Total leads'),('today','Added today'),('high','High priority'),('awaiting','Awaiting approval'),('approved','Approved to email'),('contacted','Contacted'),('followup','Follow-up due'),('interested','Interested')] %}
+<div class="card kpi"><div class="n">{{ kpi[k] }}</div><div class="l">{{ l }}</div></div>
+{% endfor %}
+</div>
+
+<div class="card">
+<b>Email outreach</b> <span class="mute">— {{ kpi.sent_today }}/{{ kpi.limit }} sent today ·
+{% if auto %}automatic mode ON: {{ auto_pr }} leads with a website-verified email are emailed + followed up daily{% else %}manual approval mode{% endif %}
+· {{ kpi.in_sequence }} in sequence · {{ kpi.replied }} replied</span>
+<form method="post" action="{{ url_for('send_approved') }}" style="margin-top:10px"
+ onsubmit="return confirm('Send approved emails and due follow-ups now?')">
+{% if smtp_ready %}<button>Send now (approved + due follow-ups)</button>
+{% else %}<span class="warn">Add SMTP_USER and SMTP_PASSWORD to .env to enable sending.</span>{% endif %}
+</form>
+</div>
+
+{% if whatsapp %}
+<div class="card"><b>WhatsApp now</b> <span class="mute">— these leads replied to your email. Message them while they're warm, then log it on the lead page.</span>
+<div class="tbl"><table>{% for l in whatsapp %}<tr>
+<td><a href="{{ url_for('lead', lead_id=l.id) }}">{{ l.company_name }}</a><div class="mute">{{ l.phone }}</div></td>
+<td>{% if l|wa %}<a class="btn" href="{{ l|wa }}" target="_blank" rel="noopener">Open WhatsApp</a>{% endif %}</td></tr>
+{% endfor %}</table></div></div>
+{% endif %}
+
+<div class="two">
+<div class="card"><b>Review &amp; approve</b> <span class="mute">(new drafts, best first)</span>
+<div class="tbl"><table>{% for l in newest %}<tr>
+<td><a href="{{ url_for('lead', lead_id=l.id) }}">{{ l.company_name }}</a><div class="mute">{{ l.industry }} · {{ l.city }}</div></td>
+<td><span class="pill {{ l.priority }}">{{ l.priority }}</span></td></tr>
+{% else %}<tr><td class="mute">Nothing waiting.</td></tr>{% endfor %}</table></div></div>
+
+<div class="card"><b>Follow-ups due</b>
+<div class="tbl"><table>{% for l in follow %}<tr>
+<td><a href="{{ url_for('lead', lead_id=l.id) }}">{{ l.company_name }}</a><div class="mute">last contact {{ l.last_contacted }}</div></td>
+<td>{{ l.follow_up_date }}</td></tr>
+{% else %}<tr><td class="mute">No follow-ups due.</td></tr>{% endfor %}</table></div></div>
+</div>
+
+{% if report %}
+<div class="card"><b>Latest daily report — {{ report.run_date }}</b>
+<div class="grid" style="margin-top:10px">
+<div class="kpi"><div class="n">{{ report.companies_researched }}</div><div class="l">Researched</div></div>
+<div class="kpi"><div class="n">{{ report.qualified_leads }}</div><div class="l">Qualified</div></div>
+<div class="kpi"><div class="n">{{ report.high }}/{{ report.medium }}/{{ report.low }}</div><div class="l">High / Med / Low</div></div>
+<div class="kpi"><div class="n">{{ report.offline_ncr_opportunities }}</div><div class="l">Offline NCR</div></div>
+<div class="kpi"><div class="n">{{ report.online_opportunities }}</div><div class="l">Online India</div></div>
+<div class="kpi"><div class="n">{{ report.messages_prepared }}</div><div class="l">Messages drafted</div></div>
+</div>
+<p><a href="{{ url_for('reports') }}">Full report →</a></p></div>
+{% else %}
+<div class="card mute">No report yet. Run <code>python run_daily.py</code> to research today's leads.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block body %}
+<form method="post" enctype="multipart/form-data" class="card" style="max-width:640px">
+<b>Import leads from CSV</b>
+<p class="mute">In your Google Sheet: File → Download → Comma-separated values (.csv), then upload it here.
+Columns like Company Name, Industry, City, Website, Email, Phone, Instagram, LinkedIn, Priority and Notes are recognised. Duplicates are skipped.</p>
+<input type="file" name="file" accept=".csv"><p><button>Import</button></p></form>
+{% endblock %}

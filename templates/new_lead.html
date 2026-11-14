@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% block body %}
+<form method="post" class="card" style="max-width:720px"><b>Add a lead manually</b>
+<div class="two"><div>
+<label>Company name *</label><input name="company_name" required>
+<label>Industry</label><input name="industry">
+<label>City</label><input name="city">
+<label>Website</label><input name="website">
+<label>Email</label><input name="email">
+</div><div>
+<label>Phone</label><input name="phone">
+<label>Instagram URL</label><input name="instagram">
+<label>LinkedIn URL</label><input name="linkedin">
+<label>Priority</label><select name="priority"><option>High</option><option selected>Medium</option><option>Low</option></select>
+<label>Notes</label><textarea name="notes"></textarea>
+</div></div>
+<p><button>Add lead</button> <span class="mute">Duplicates are detected automatically.</span></p></form>
+{% endblock %}

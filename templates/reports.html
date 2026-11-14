@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% block body %}
+<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+<form method="get"><select name="d" onchange="this.form.submit()" style="width:auto">
+{% for x in reps %}<option value="{{ x.run_date }}" {{ 'selected' if r and x.run_date==r.run_date }}>{{ x.run_date }}</option>{% endfor %}</select></form>
+<form method="post" action="{{ url_for('build_report_now') }}"><button class="btn2">Rebuild today's report</button></form>
+</div>
+{% if r %}
+<div class="card"><h2 style="margin-top:0">Daily research report — {{ r.run_date }}</h2>
+<div class="grid">
+{% for k,l in [('companies_researched','Companies researched'),('qualified_leads','Qualified leads'),('high','High priority'),('medium','Medium priority'),('low','Low priority'),('online_opportunities','Online – India'),('offline_ncr_opportunities','Offline – Delhi NCR'),('messages_prepared','Messages prepared'),('follow_ups_pending','Follow-ups pending'),('awaiting_approval','Awaiting approval'),('first_emails_sent','First emails sent'),('follow_ups_sent','Follow-ups sent'),('replies','Replies'),('opt_outs','Opt-outs'),('bounces','Bounces'),('whatsapp_due','WhatsApp now'),('in_sequence','In email sequence'),('duplicates_skipped','Duplicates skipped'),('rejected','Rejected')] %}
+<div class="kpi"><div class="n">{{ r[k] }}</div><div class="l">{{ l }}</div></div>{% endfor %}
+</div>
+{% if r.segments %}<p class="mute">Segments searched: {% for s in r.segments %}{{ s[0] }} — {{ s[1] }}{% if not loop.last %}; {% endif %}{% endfor %}</p>{% endif %}
+</div>
+<div class="two">
+<div class="card"><b>By industry</b><table>{% for k,v in r.by_industry %}<tr><td>{{ k }}</td><td>{{ v }}</td></tr>{% endfor %}</table></div>
+<div class="card"><b>By city</b><table>{% for k,v in r.by_city %}<tr><td>{{ k }}</td><td>{{ v }}</td></tr>{% endfor %}</table></div>
+</div>
+<div class="card"><b>Recommended INFLOTIVE services</b><table>{% for k,v in r.recommended_services %}<tr><td>{{ k }}</td><td>{{ v }}</td></tr>{% endfor %}</table></div>
+<div class="card"><b>Top leads</b><div class="tbl"><table><tr><th>ID</th><th>Company</th><th>Industry</th><th>City</th><th>Priority</th><th>Opportunity</th></tr>
+{% for l in r.top_leads %}<tr><td class="mute">{{ l.code }}</td><td>{{ l.company }}</td><td>{{ l.industry }}</td><td>{{ l.city }}</td><td><span class="pill {{ l.priority }}">{{ l.priority }}</span></td><td>{{ l.opportunity }}</td></tr>{% endfor %}</table></div></div>
+{% else %}<div class="card mute">No reports yet. Run <code>python run_daily.py</code>.</div>{% endif %}
+{% endblock %}

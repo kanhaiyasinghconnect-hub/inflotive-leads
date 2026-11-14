@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INFLOTIVE CRM</title>
+<style>
+:root{--bg:#f6f6f4;--card:#fff;--ink:#16161a;--mute:#6b6b74;--line:#e4e4e0;--accent:#111;--gold:#b08d3c;
+--hi:#c0392b;--md:#c9821b;--lo:#7a7a85;--ok:#1f8a4c}
+@media (prefers-color-scheme:dark){:root{--bg:#121214;--card:#1c1c20;--ink:#ececf0;--mute:#9a9aa5;--line:#2d2d33;--accent:#f2f2f2}}
+*{box-sizing:border-box}body{margin:0;font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink)}
+header{display:flex;gap:20px;align-items:center;padding:14px 24px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+header b{letter-spacing:.18em;font-size:15px}header b span{color:var(--gold)}
+nav a{color:var(--mute);text-decoration:none;margin-right:16px}nav a:hover,nav a.on{color:var(--ink)}
+main{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.kpi .n{font-size:26px;font-weight:650}.kpi .l{color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+table{width:100%;border-collapse:collapse}th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+a{color:inherit}.mute{color:var(--mute)}.tbl{overflow-x:auto}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;border:1px solid var(--line);white-space:nowrap}
+.High{color:#fff;background:var(--hi);border-color:var(--hi)}.Medium{color:#fff;background:var(--md);border-color:var(--md)}.Low{background:transparent;color:var(--lo)}
+.chips a{display:inline-block;margin:0 6px 6px 0;padding:4px 10px;border:1px solid var(--line);border-radius:99px;text-decoration:none;color:var(--mute);background:var(--card)}
+.chips a.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+input,select,textarea{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:110px}label{display:block;font-size:12px;color:var(--mute);margin:10px 0 3px}
+button,.btn{display:inline-block;padding:7px 14px;border-radius:7px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer;font:inherit;text-decoration:none}
+.btn2{background:transparent;color:var(--ink);border-color:var(--line)}
+.flash{background:#fff7e0;color:#5a4300;border:1px solid #f0d58a;padding:8px 12px;border-radius:8px;margin-bottom:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:800px){.two{grid-template-columns:1fr}}
+.ok{color:var(--ok)}.warn{color:var(--md)}
+</style>
+</head>
+<body>
+<header><b>INFLO<span>TIVE</span> CRM</b>
+<nav>
+<a href="{{ url_for('dashboard') }}">Dashboard</a>
+<a href="{{ url_for('leads') }}">Leads</a>
+<a href="{{ url_for('reports') }}">Reports</a>
+<a href="{{ url_for('new_lead') }}">+ Add lead</a>
+<a href="{{ url_for('import_csv') }}">Import</a>
+<a href="{{ url_for('export_csv') }}">Export CSV</a>
+</nav></header>
+<main>
+{% for m in get_flashed_messages() %}<div class="flash">{{ m }}</div>{% endfor %}
+{% block body %}{% endblock %}
+</main>
+<script>
+function copyText(id){const t=document.getElementById(id);navigator.clipboard.writeText(t.value||t.innerText);}
+</script>
+</body></html>

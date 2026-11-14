@@ -1,0 +1,73 @@
+{% extends "base.html" %}{% block body %}
+<div class="card">
+<div class="mute">{{ l.lead_code }} · added {{ l.date_added }} · {{ l.opportunity_type }}</div>
+<h2 style="margin:4px 0">{{ l.company_name }} <span class="pill {{ l.priority }}">{{ l.priority }}</span></h2>
+<div>{{ l.industry }} · {{ l.city }}{% if l.founded %} · founded {{ l.founded }}{% if not l.founded_verified %} <span class="warn">(unverified)</span>{% endif %}{% endif %}</div>
+<p>{{ l.description or '' }}</p>
+<div class="two">
+<div>
+<b>Contact</b>
+<div>Website: {% if l.website %}<a href="{{ l.website }}" target="_blank" rel="noopener">{{ l.website }}</a>{% else %}<span class="mute">unavailable</span>{% endif %}</div>
+<div>Email: {{ l.email or 'unavailable' }} {% if l.email %}{% if l.email_verified %}<span class="ok">✓ seen on site</span>{% else %}<span class="warn">not confirmed on site</span>{% endif %}{% endif %}</div>
+<div>Phone: {{ l.phone or 'unavailable' }} {% if l.phone %}{% if l.phone_verified %}<span class="ok">✓ seen on site</span>{% else %}<span class="warn">not confirmed on site</span>{% endif %}{% endif %}</div>
+<div>Instagram: {% if l.instagram %}<a href="{{ l.instagram }}" target="_blank" rel="noopener">{{ l.instagram }}</a>{% else %}<span class="mute">unavailable</span>{% endif %}</div>
+<div>LinkedIn: {% if l.linkedin %}<a href="{{ l.linkedin }}" target="_blank" rel="noopener">{{ l.linkedin }}</a>{% else %}<span class="mute">unavailable</span>{% endif %}</div>
+</div>
+<div>
+<b>Why them</b>
+<div><span class="mute">Digital presence:</span> {{ l.digital_presence or '' }}</div>
+<div><span class="mute">Opportunity:</span> {{ l.marketing_opportunity or '' }}</div>
+<div><span class="mute">Reason:</span> {{ l.reason_for_targeting or '' }}</div>
+<div><span class="mute">Priority reason:</span> {{ l.priority_reason or '' }}</div>
+<div><span class="mute">Pitch:</span> {% for s in l.recommended_services|services %}<span class="pill">{{ s }}</span> {% endfor %}</div>
+<div><span class="mute">Best channel:</span> {{ l.outreach_channel or '' }}</div>
+</div></div>
+{% if l.sources %}<details style="margin-top:8px"><summary class="mute">Sources</summary>{% for s in l.sources|services %}<div><a href="{{ s }}" target="_blank" rel="noopener">{{ s }}</a></div>{% endfor %}</details>{% endif %}
+</div>
+
+<div class="card"><b>Send outreach</b> <span class="mute">— nothing is sent without your click.</span>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+<form method="post">{% if l.outreach_status == 'Approved' %}
+<input type="hidden" name="action" value="unapprove"><button class="btn2">Withdraw email approval</button>
+{% else %}<input type="hidden" name="action" value="approve_email"><button {% if not l.email or l.do_not_contact %}disabled{% endif %}>Approve email</button>{% endif %}</form>
+{% if l.linkedin %}<a class="btn btn2" href="{{ l.linkedin }}" target="_blank" rel="noopener" onclick="copyText('linkedin_message')">Copy note &amp; open LinkedIn</a>{% endif %}
+{% if l.instagram %}<a class="btn btn2" href="{{ l.instagram }}" target="_blank" rel="noopener" onclick="copyText('instagram_dm')">Copy DM &amp; open Instagram</a>{% endif %}
+{% if l.phone and l.whatsapp_message %}<a class="btn btn2" href="{{ l|wa }}" target="_blank" rel="noopener">Open WhatsApp with message</a>{% endif %}
+</div>
+<form method="post" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center">
+<span class="mute">After you send it yourself, log it:</span>
+<select name="action" style="width:auto"><option value="linkedin">LinkedIn sent</option><option value="instagram">Instagram DM sent</option><option value="whatsapp">WhatsApp sent</option><option value="call">Called</option><option value="meeting">Met in person</option><option value="note">Note only</option></select>
+<input name="detail" placeholder="optional detail" style="max-width:280px"><button class="btn2">Log</button></form>
+</div>
+
+<form method="post" class="card"><input type="hidden" name="action" value="save">
+<b>Drafts &amp; status</b>
+<div class="two"><div>
+<label>Email subject</label><input name="email_subject" value="{{ l.email_subject or '' }}">
+<label>Email body <a href="#" onclick="copyText('email_body');return false">copy</a></label><textarea id="email_body" name="email_body" style="min-height:220px">{{ l.email_body or '' }}</textarea>
+<label>Follow-up 1 (auto, same thread)</label><textarea name="follow_up_1">{{ l.follow_up_1 or '' }}</textarea>
+<label>Follow-up 2 (auto, same thread)</label><textarea name="follow_up_2">{{ l.follow_up_2 or '' }}</textarea>
+<div class="mute">Email sequence step: {{ l.email_step or 0 }} of 3{% if l.first_email_date %} · first sent {{ l.first_email_date }}{% endif %}</div>
+</div><div>
+<label>LinkedIn connection note <a href="#" onclick="copyText('linkedin_message');return false">copy</a></label><textarea id="linkedin_message" name="linkedin_message">{{ l.linkedin_message or '' }}</textarea>
+<label>Instagram DM <a href="#" onclick="copyText('instagram_dm');return false">copy</a></label><textarea id="instagram_dm" name="instagram_dm">{{ l.instagram_dm or '' }}</textarea>
+<label>WhatsApp message</label><textarea name="whatsapp_message">{{ l.whatsapp_message or '' }}</textarea>
+</div></div>
+<div class="two"><div>
+<label>Email</label><input name="email" value="{{ l.email or '' }}">
+<label>Phone</label><input name="phone" value="{{ l.phone or '' }}">
+<label>Website</label><input name="website" value="{{ l.website or '' }}">
+<label>Instagram URL</label><input name="instagram" value="{{ l.instagram or '' }}">
+<label>LinkedIn URL</label><input name="linkedin" value="{{ l.linkedin or '' }}">
+</div><div>
+<label>Priority</label><select name="priority">{% for p in ['High','Medium','Low'] %}<option {{ 'selected' if p==l.priority }}>{{ p }}</option>{% endfor %}</select>
+<label>Outreach status</label><select name="outreach_status">{% for s in statuses %}<option {{ 'selected' if s==l.outreach_status }}>{{ s }}</option>{% endfor %}</select>
+<label>Response</label><select name="response_status">{% for s in responses %}<option {{ 'selected' if s==l.response_status }}>{{ s }}</option>{% endfor %}</select>
+<label>Follow-up date</label><input type="date" name="follow_up_date" value="{{ l.follow_up_date or '' }}">
+<label>Notes</label><textarea name="notes">{{ l.notes or '' }}</textarea>
+</div></div>
+<p><button>Save changes</button></p>
+</form>
+
+<div class="card"><b>Activity</b><table>{% for a in acts %}<tr><td class="mute" style="width:170px">{{ a.ts }}</td><td>{{ a.kind }}</td><td>{{ a.detail }}</td></tr>{% endfor %}</table></div>
+{% endblock %}

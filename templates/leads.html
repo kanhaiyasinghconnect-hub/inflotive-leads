@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block body %}
+<div class="chips">{% for k,v in filters.items() %}<a class="{{ 'on' if k==current }}" href="{{ url_for('leads', f=k, q=q) }}">{{ v[0] }}</a>{% endfor %}</div>
+<form method="get" style="margin:6px 0 14px;display:flex;gap:8px;max-width:520px">
+<input type="hidden" name="f" value="{{ current }}"><input name="q" value="{{ q }}" placeholder="Search company, city, industry, ID">
+<button>Search</button></form>
+<div class="card"><b>{{ label }}</b> <span class="mute">({{ rows|length }})</span>
+<div class="tbl"><table>
+<tr><th>ID</th><th>Company</th><th>Industry</th><th>City</th><th>Type</th><th>Priority</th><th>Contact</th><th>Status</th><th>Follow-up</th></tr>
+{% for l in rows %}<tr>
+<td class="mute">{{ l.lead_code }}</td>
+<td><a href="{{ url_for('lead', lead_id=l.id) }}">{{ l.company_name }}</a></td>
+<td>{{ l.industry }}</td><td>{{ l.city }}</td>
+<td class="mute">{{ l.opportunity_type }}</td>
+<td><span class="pill {{ l.priority }}">{{ l.priority }}</span></td>
+<td>{% if l.email %}✉{% if l.email_verified %}<span class="ok">✓</span>{% endif %} {% endif %}{% if l.linkedin %}in {% endif %}{% if l.instagram %}ig {% endif %}{% if l.phone %}☎{% endif %}</td>
+<td>{{ l.outreach_status }}{% if l.response_status and l.response_status!='No response' %}<div class="mute">{{ l.response_status }}</div>{% endif %}</td>
+<td class="mute">{{ l.follow_up_date or '' }}</td>
+</tr>{% else %}<tr><td colspan="9" class="mute">No leads here yet.</td></tr>{% endfor %}
+</table></div></div>
+{% endblock %}
